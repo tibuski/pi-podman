@@ -27,7 +27,9 @@ podman run -it --name pidman \
 
 The first volume mount uses `$(pwd)` to bind your current directory as the agent's workspace. Replace `$(pwd)` with the absolute path to any project directory you want the agent to work in. The second volume mount persists the agent's configuration across runs.
 
-By default the container is named `pidman` and kept after exit — any tools you install with `apt-get` will still be there next time. To resume: `podman start -ai pidman`.
+By giving the container a fixed name (`--name pidman`) and omitting `--rm`, you're building a persistent development environment. The first run creates the container; each subsequent `podman start -ai pidman` resumes that same container with everything you've installed still in place — tools, libraries, CLI helpers like `gh`, everything.
+
+Running `podman run --name pidman` a second time will fail (name already taken), which is a good guardrail: it forces you to `podman start -ai pidman` and pick up where you left off. If you ever want a fresh start, just remove the old container (`podman rm pidman`) and run again.
 
 If you prefer a clean, ephemeral container, add `--rm` and drop `--name`:
 
