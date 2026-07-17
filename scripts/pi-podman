@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IMAGE="pi-podman:latest"
+CONTAINER="pi-podman"
+
+# Build image if not present
+if ! podman image exists "$IMAGE" 2>/dev/null; then
+  echo "==> Building image $IMAGE..."
+  podman build -t "$IMAGE" -f "$(dirname "$0")/../Dockerfile.pi" "$(dirname "$0")/.."
+fi
+
+# Run or start container
+if podman container exists "$CONTAINER" 2>/dev/null; then
+  if podman ps --filter "name=$CONTAINER" --format '{{.Names}}' | grep -q "^$CONTAINER$"; then
+    echo "==> Attaching to running container..."
+    podman attach "$CONTAINER"
+  else
+    echo "==> Starting existing container..."
+    podman start -ai "$CONTAINER"
+  fi
+else
+  echo "==> Creating and running new container..."
+  podman run -it --name "$CONTAINER" \
+    -v "$PWD:/workspace" \
+    -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" \
+    "$IMAGE"
+fi
