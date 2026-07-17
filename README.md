@@ -4,27 +4,34 @@ Containerized [Pi Coding Agent](https://www.npmjs.com/package/@earendil-works/pi
 
 A ready-to-use Podman image that bundles the Pi coding agent with essential development tools in an isolated, reproducible environment.
 
-## Quick Start
+## Script (Recommended)
 
-### Prerequisites
-
-- [Podman](https://podman.io/)
-
-### One-liner
+Use `scripts/pi-podman` to manage the container lifecycle:
 
 ```bash
 ./scripts/pi-podman
 ```
 
-Or install it to your PATH:
+The script handles everything automatically:
+
+| State | Action |
+|-------|--------|
+| Image missing | `podman build` then run |
+| No container | `podman run -it` (create + start) |
+| Container stopped | `podman start -ai` (resume) |
+| Container running | `podman attach` (reconnect) |
+
+It mounts `$PWD` as `/workspace` and forwards `$ANTHROPIC_API_KEY`.
+
+To use it from anywhere:
 
 ```bash
 sudo ln -s "$(pwd)/scripts/pi-podman" /usr/local/bin/pi
 ```
 
-Then just run `pi` — it auto-builds the image if missing, creates a new container on first run, and re-attaches on subsequent runs.
+Then just `pi` to start or resume your session.
 
-### Manual Build
+## Manual Usage
 
 ```bash
 podman build -t pi-podman -f Dockerfile.pi .
