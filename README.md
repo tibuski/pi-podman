@@ -2,13 +2,13 @@
 
 Containerized [Pi Coding Agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) powered by Debian Sid and Node.js 26.
 
-A ready-to-use Docker/Podman image that bundles the Pi coding agent with essential development tools in an isolated, reproducible environment.
+A ready-to-use Podman image that bundles the Pi coding agent with essential development tools in an isolated, reproducible environment.
 
 ## Quick Start
 
 ### Prerequisites
 
-- [Podman](https://podman.io/) or [Docker](https://www.docker.com/)
+- [Podman](https://podman.io/)
 
 ### Build
 
@@ -38,6 +38,14 @@ Replace `$(pwd)` with your project directory path. The second volume mount persi
 ### Included Tools
 
 `bash`, `ca-certificates`, `curl`, `git`, `gnupg`, `jq`, `libatomic1`, `make`, `openssh-client`, `procps`, `ripgrep`, `tree`, `unzip`, `wget`, `xz-utils`, `zip`
+
+### Installing Additional Tools
+
+The image is based on Debian Sid, so the agent can install missing development tools or libraries on the fly. Simply ask the agent to run:
+
+```bash
+apt-get update && apt-get install -y <package-name>
+```
 
 ## License
 
