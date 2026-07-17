@@ -90,3 +90,9 @@ The image is based on Debian Sid, so the agent can install missing development t
 apt-get update && apt-get install -y <package-name>
 ```
 
+For example, to authenticate with GitHub and push commits from inside the container:
+
+```bash
+apt-get update && apt-get install -y gh && gh auth login
+```
+
