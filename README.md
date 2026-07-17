@@ -25,7 +25,7 @@ podman run --rm -it \
   pidman.dev
 ```
 
-Replace `$(pwd)` with your project directory path. The second volume mount persists the agent's configuration across runs.
+The first volume mount uses `$(pwd)` to bind your current directory as the agent's workspace. Replace `$(pwd)` with the absolute path to any project directory you want the agent to work in. The second volume mount persists the agent's configuration across runs.
 
 ## Image Contents
 
@@ -47,6 +47,4 @@ The image is based on Debian Sid, so the agent can install missing development t
 apt-get update && apt-get install -y <package-name>
 ```
 
-## License
-
-This project is provided as-is. See the [Pi Coding Agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) for its licensing terms.
+## Image Contents
