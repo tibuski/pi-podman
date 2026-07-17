@@ -23,6 +23,9 @@ else
   echo "==> Creating and running new container..."
   podman run -it --name "$CONTAINER" \
     -v "$PWD:/workspace" \
-    -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" \
     "$IMAGE"
+  # Pass any env vars the agent needs, e.g.:
+  #   -e ANTHROPIC_API_KEY \
+  #   -e OPENAI_API_KEY \
+  #   -e GOOGLE_API_KEY
 fi

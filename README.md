@@ -21,7 +21,7 @@ The script handles everything automatically:
 | Container stopped | `podman start -ai` (resume) |
 | Container running | `podman attach` (reconnect) |
 
-It mounts `$PWD` as `/workspace` and forwards `$ANTHROPIC_API_KEY`.
+It mounts `$PWD` as `/workspace`. To pass API keys or other env vars, edit the script and add `-e` lines to the `podman run` command.
 
 To use it from anywhere:
 
