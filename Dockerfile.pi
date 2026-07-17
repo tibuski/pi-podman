@@ -23,7 +23,7 @@ RUN apt-get update \
      zip \
      nano \
      vim \
-     neovim \ 
+     neovim \
   && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_VERSION=26.5.0
