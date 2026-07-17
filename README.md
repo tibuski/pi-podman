@@ -19,13 +19,24 @@ podman build -t pidman.dev -f Dockerfile.pi .
 ### Run
 
 ```bash
-podman run --rm -it \
+podman run -it --name pidman \
   -v "$(pwd):/workspace:Z" \
   -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
   pidman.dev
 ```
 
 The first volume mount uses `$(pwd)` to bind your current directory as the agent's workspace. Replace `$(pwd)` with the absolute path to any project directory you want the agent to work in. The second volume mount persists the agent's configuration across runs.
+
+By default the container is named `pidman` and kept after exit — any tools you install with `apt-get` will still be there next time. To resume: `podman start -ai pidman`.
+
+If you prefer a clean, ephemeral container, add `--rm` and drop `--name`:
+
+```bash
+podman run --rm -it \
+  -v "$(pwd):/workspace:Z" \
+  -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
+  pidman.dev
+```
 
 > [!WARNING]
 > **Always use rootless Podman** — do **not** run with `sudo podman` or the `--privileged` flag.
@@ -51,3 +62,4 @@ The image is based on Debian Sid, so the agent can install missing development t
 ```bash
 apt-get update && apt-get install -y <package-name>
 ```
+
