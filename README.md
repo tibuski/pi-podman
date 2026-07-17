@@ -1,4 +1,4 @@
-# pidman.dev
+# pi-podman
 
 Containerized [Pi Coding Agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) powered by Debian Sid and Node.js 26.
 
@@ -10,26 +10,40 @@ A ready-to-use Podman image that bundles the Pi coding agent with essential deve
 
 - [Podman](https://podman.io/)
 
-### Build
+### One-liner
 
 ```bash
-podman build -t pidman.dev -f Dockerfile.pi .
+./scripts/pi-podman
 ```
 
-### Run
+Or install it to your PATH:
 
 ```bash
-podman run -it --name pidman \
+sudo ln -s "$(pwd)/scripts/pi-podman" /usr/local/bin/pi
+```
+
+Then just run `pi` — it auto-builds the image if missing, creates a new container on first run, and re-attaches on subsequent runs.
+
+### Manual Build
+
+```bash
+podman build -t pi-podman -f Dockerfile.pi .
+```
+
+### Manual Run
+
+```bash
+podman run -it --name pi-podman \
   -v "$(pwd):/workspace:Z" \
   -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
-  pidman.dev
+  pi-podman
 ```
 
 The first volume mount uses `$(pwd)` to bind your current directory as the agent's workspace. Replace `$(pwd)` with the absolute path to any project directory you want the agent to work in. The second volume mount persists the agent's configuration across runs.
 
-By giving the container a fixed name (`--name pidman`) and omitting `--rm`, you're building a persistent development environment. The first run creates the container; each subsequent `podman start -ai pidman` resumes that same container with everything you've installed still in place — tools, libraries, CLI helpers like `gh`, everything.
+By giving the container a fixed name (`--name pi-podman`) and omitting `--rm`, you're building a persistent development environment. The first run creates the container; each subsequent `podman start -ai pi-podman` resumes that same container with everything you've installed still in place — tools, libraries, CLI helpers like `gh`, everything.
 
-Running `podman run --name pidman` a second time will fail (name already taken), which is a good guardrail: it forces you to `podman start -ai pidman` and pick up where you left off. If you ever want a fresh start, just remove the old container (`podman rm pidman`) and run again.
+Running `podman run --name pi-podman` a second time will fail (name already taken), which is a good guardrail: it forces you to `podman start -ai pi-podman` and pick up where you left off. If you ever want a fresh start, just remove the old container (`podman rm pi-podman`) and run again.
 
 If you prefer a clean, ephemeral container, add `--rm` and drop `--name`:
 
@@ -37,7 +51,7 @@ If you prefer a clean, ephemeral container, add `--rm` and drop `--name`:
 podman run --rm -it \
   -v "$(pwd):/workspace:Z" \
   -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
-  pidman.dev
+  pi-podman
 ```
 
 > [!WARNING]
@@ -55,7 +69,7 @@ podman run --rm -it \
 
 ### Included Tools
 
-`bash`, `ca-certificates`, `curl`, `git`, `gnupg`, `jq`, `libatomic1`, `make`, `openssh-client`, `procps`, `ripgrep`, `tree`, `unzip`, `wget`, `xz-utils`, `zip`
+`bash`, `ca-certificates`, `curl`, `fd-find`, `git`, `gnupg`, `jq`, `libatomic1`, `make`, `openssh-client`, `procps`, `ripgrep`, `tree`, `unzip`, `wget`, `xz-utils`, `zip`
 
 ### Installing Additional Tools
 
