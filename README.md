@@ -27,6 +27,11 @@ podman run --rm -it \
 
 The first volume mount uses `$(pwd)` to bind your current directory as the agent's workspace. Replace `$(pwd)` with the absolute path to any project directory you want the agent to work in. The second volume mount persists the agent's configuration across runs.
 
+> [!WARNING]
+> **Always use rootless Podman** — do **not** run with `sudo podman` or the `--privileged` flag.
+>
+> In rootless mode, Podman maps the container's root user to your host UID via user namespaces, so files created under `/workspace` remain owned by you. Running with `sudo` or `--privileged` bypasses this mapping: the agent runs as real root, and any file it creates on your mounted volumes will be owned by root on the host.
+
 ## Image Contents
 
 | Component       | Version / Details          |
