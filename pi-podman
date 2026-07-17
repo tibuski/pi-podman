@@ -7,12 +7,13 @@ CONTAINER="pi-podman"
 # Build image if not present
 if ! podman image exists "$IMAGE" 2>/dev/null; then
   echo "==> Building image $IMAGE..."
-  podman build -t "$IMAGE" -f "$(dirname "$0")/../Dockerfile.pi" "$(dirname "$0")/.."
+  podman build -t "$IMAGE" -f ./Dockerfile.pi .
 fi
 
 # Run or start container
 if podman container exists "$CONTAINER" 2>/dev/null; then
-  if podman ps --filter "name=$CONTAINER" --format '{{.Names}}' | grep -q "^$CONTAINER$"; then
+  # Use exact regex match in podman filter to avoid grep
+  if [ "$(podman ps -q --filter "name=^${CONTAINER}$")" ]; then
     echo "==> Attaching to running container..."
     podman attach "$CONTAINER"
   else
@@ -21,11 +22,15 @@ if podman container exists "$CONTAINER" 2>/dev/null; then
   fi
 else
   echo "==> Creating and running new container..."
+  
+  # Ensure host directory exists to prevent root-owned auto-creation by Podman
+  mkdir -p "$HOME/.config/pi.dev"
+
   podman run -it --name "$CONTAINER" \
-    -v "$PWD:/workspace" \
+    -v "$(pwd):/workspace:Z" \
+    -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
     "$IMAGE"
-  # Pass any env vars the agent needs, e.g.:
-  #   -e ANTHROPIC_API_KEY \
-  #   -e OPENAI_API_KEY \
-  #   -e GOOGLE_API_KEY
+
+  # Pour passer des variables d'environnement, ajoutez-les juste au-dessus de "$IMAGE", par exemple :
+  # -e ANTHROPIC_API_KEY \
 fi
