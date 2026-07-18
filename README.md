@@ -1,6 +1,6 @@
 # pi-podman
 
-Containerized [Pi Coding Agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent) powered by Debian Sid and Node.js 26.
+Containerized [Pi Coding Agent](https://pi.dev/) powered by Debian Sid and Node.js 26.
 
 A ready-to-use Podman image that bundles the Pi coding agent with essential development tools in an isolated, reproducible environment.
 
