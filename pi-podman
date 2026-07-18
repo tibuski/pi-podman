@@ -11,8 +11,32 @@ if ! podman image exists "$IMAGE" 2>/dev/null; then
   podman build -t "$IMAGE" -f "$SCRIPT_DIR/Dockerfile.pi" "$SCRIPT_DIR"
 fi
 
+run_container() {
+  mkdir -p "$HOME/.config/pi.dev"
+  podman run -it --name "$CONTAINER" \
+    -v "$(pwd):/workspace:Z" \
+    -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
+    "$IMAGE"
+
+  # To pass environment variables, add -e lines just above "$IMAGE", for example:
+  # -e ANTHROPIC_API_KEY \
+}
+
 # Run or start container
 if podman container exists "$CONTAINER" 2>/dev/null; then
+  CURRENT_MOUNT=$(podman inspect "$CONTAINER" --format \
+    '{{range .Mounts}}{{if eq .Destination "/workspace"}}{{.Source}}{{end}}{{end}}')
+
+  if [ "$CURRENT_MOUNT" != "$(pwd)" ]; then
+    echo "==> Switching workspace to $(pwd)..."
+    podman stop "$CONTAINER" 2>/dev/null || true
+    echo "==> Saving container state..."
+    podman commit "$CONTAINER" "$IMAGE"
+    podman rm "$CONTAINER"
+    run_container
+    exit 0
+  fi
+
   # Use exact regex match in podman filter to avoid grep
   if [ "$(podman ps -q --filter "name=^${CONTAINER}$")" ]; then
     echo "==> Attaching to running container..."
@@ -23,15 +47,5 @@ if podman container exists "$CONTAINER" 2>/dev/null; then
   fi
 else
   echo "==> Creating and running new container..."
-  
-  # Ensure host directory exists to prevent root-owned auto-creation by Podman
-  mkdir -p "$HOME/.config/pi.dev"
-
-  podman run -it --name "$CONTAINER" \
-    -v "$(pwd):/workspace:Z" \
-    -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
-    "$IMAGE"
-
-  # To pass environment variables, add -e lines just above "$IMAGE", for example:
-  # -e ANTHROPIC_API_KEY \
+  run_container
 fi

@@ -18,8 +18,17 @@ The script handles everything automatically:
 |-------|--------|
 | Image missing | `podman build` then run |
 | No container | `podman run -it` (create + start) |
-| Container stopped | `podman start -ai` (resume) |
-| Container running | `podman attach` (reconnect) |
+| Container stopped, same workspace | `podman start -ai` (resume) |
+| Container running, same workspace | `podman attach` (reconnect) |
+| Different workspace | commit → remove → recreate with new `$PWD` |
+
+If you run the script from a different directory than last time, the workspace mount changes automatically. The script saves your container state (`podman commit`) before recreating, so any tools you installed with `apt` or `npm` are preserved.
+
+Each workspace switch adds a layer to the image. To reset accumulated layers, rebuild from the Dockerfile:
+
+```bash
+podman build -t pi-podman:latest -f Dockerfile.pi .
+```
 
 It mounts `$PWD` as `/workspace`. To pass API keys or other env vars, edit the script and add `-e` lines to the `podman run` command.
 
