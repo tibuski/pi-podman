@@ -15,7 +15,7 @@ run_container() {
   mkdir -p "$HOME/.config/pi.dev"
   podman run -it --name "$CONTAINER" \
     -v "$(pwd):/workspace:Z" \
-    -v "$HOME/.config/pi.dev:/root/.pi/agent:Z" \
+    -v "$HOME/.config/pi.dev:/root/.pi:Z" \
     "$IMAGE"
 
   # To pass environment variables, add -e lines just above "$IMAGE", for example:
